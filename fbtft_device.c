@@ -1072,6 +1072,71 @@ static struct fbtft_device_display displays[] = {
 			},
 		},
 		},
+	}, {
+		.name = "KGM1066A0",
+		.pdev = &(struct platform_device) {
+			.name = "fb_rm68120",
+			.id = -1,
+			.dev = {
+			.release = fbtft_device_pdev_release,
+			.platform_data = &(struct fbtft_platform_data) {
+				.display = {
+					.buswidth = 16,
+					.backlight = 0,
+					.width = 800,
+					.height = 480,
+				},
+				.bgr = false,
+				.gpios = (const struct fbtft_gpio []) {
+					/* Wiring for LCD adapter kit */
+					{ "reset", 16 },
+                    { "wr", 20 },   /* rev 2: 3 */
+                    { "cs", 21 },
+
+                 	{ "rd", 5},
+                    { "dc", 6},
+                    { "led", 2},
+
+					{ "db00", 11 },
+                    { "db02", 9 },
+                    { "db04", 10 },
+                    { "db06", 22 },
+                    { "db08", 27 },
+                    { "db10", 17 },
+                    { "db12", 4 },
+                    { "db14", 3 },
+
+                    { "db01", 7 },
+                    { "db03", 8 },
+                    { "db05", 25 },
+                    { "db07", 24 },
+                    { "db09", 23 },
+                    { "db11", 18 },
+                    { "db13", 15 },
+                    { "db15", 14 },
+/*
+                    { "db15", 11 },
+                    { "db13", 9 },
+                    { "db11", 10 },
+                    { "db09", 22 },
+                    { "db07", 27 },
+                    { "db05", 17 },
+                    { "db03", 4 },
+                    { "db01", 3 },
+
+                    { "db14", 7 },
+                    { "db12", 8 },
+                    { "db10", 25 },
+                    { "db08", 24 },
+                    { "db06", 23 },
+                    { "db04", 18 },
+                    { "db02", 15 },
+                    { "db00", 14 },*/
+					{}
+				},
+			},
+			}
+		}
 	}
 };
 

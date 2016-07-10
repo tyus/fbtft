@@ -167,3 +167,7 @@ config FB_FLEX
 config FB_TFT_FBTFT_DEVICE
 	tristate "Module to for adding FBTFT devices"
 	depends on FB_TFT
+
+config FB_TFT_RM68120
+	tristate "Module to for RM68120 FBTFT devices"
+	depends on FB_TFT

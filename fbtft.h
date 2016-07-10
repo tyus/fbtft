@@ -356,11 +356,10 @@ static struct platform_driver fbtft_driver_platform_driver = {             \
 static int __init fbtft_driver_module_init(void)                           \
 {                                                                          \
 	int ret;                                                           \
-									   \
-	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
+	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
 	if (ret < 0)                                                       \
 		return ret;                                                \
-	return platform_driver_register(&fbtft_driver_platform_driver);    \
+	return spi_register_driver(&fbtft_driver_spi_driver);   	   \
 }                                                                          \
 									   \
 static void __exit fbtft_driver_module_exit(void)                          \
