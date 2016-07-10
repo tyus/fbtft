@@ -12,7 +12,7 @@
 #define WIDTH		800
 #define HEIGHT		480
 #define BPP		16
-#define FPS		50
+#define FPS		100
 
 static int init_display(struct fbtft_par *par)
 {
@@ -455,7 +455,7 @@ static int init_display(struct fbtft_par *par)
 	gpio_set_value(par->gpio.led[0], 1); 
 
 	write_reg(par, 0x3A00, 0x55);
-	write_reg(par, 0x3600, 0xA8);
+	write_reg(par, 0x3600, 0xA0);
 
 }
 
@@ -490,74 +490,6 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 	}
 	write_reg(par, 0x2c00); /* Write Data to GRAM */
 }
-
-static int set_var(struct fbtft_par *par)
-{
-	fbtft_par_dbg(DEBUG_INIT_DISPLAY, par, "%s()\n", __func__);
-
-	switch (par->info->var.rotate) {
-	/* AM: GRAM update direction */
-	case 0:
-		write_reg(par, 0x03, 0x0003 | (par->bgr << 12));
-		break;
-	case 180:
-		write_reg(par, 0x03, 0x0000 | (par->bgr << 12));
-		break;
-	case 270:
-		write_reg(par, 0x03, 0x000A | (par->bgr << 12));
-		break;
-	case 90:
-		write_reg(par, 0x03, 0x0009 | (par->bgr << 12));
-		break;
-	}
-
-	return 0;
-}
-
-/*
-  Gamma string format:
-    PKP0 PKP1 PKP2 PKP3 PKP4 PKP5 PKP6 PKP7 PKP8 PKP9 PKP10 PKP11 VRP0 VRP1
-    PKN0 PKN1 PKN2 PKN3 PKN4 PKN5 PKN6 PKN7 PRN8 PRN9 PRN10 PRN11 VRN0 VRN1
-*/
-#define CURVE(num, idx)  curves[num*par->gamma.num_values + idx]
-static int set_gamma(struct fbtft_par *par, unsigned long *curves)
-{
-	unsigned long mask[] = {
-		0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 
-		0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111,
-		0b11111, 0b11111,
-		0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111,
-		0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111,
-		0b11111, 0b11111 };
-	int i, j;
-
-	fbtft_par_dbg(DEBUG_INIT_DISPLAY, par, "%s()\n", __func__);
-
-	/* apply mask */
-	for (i = 0; i < 2; i++)
-		for (j = 0; j < 14; j++)
-			CURVE(i, j) &= mask[i*par->gamma.num_values + j];
-
-	write_reg(par, 0x0030, CURVE(0, 1) << 8 | CURVE(0, 0));
-	write_reg(par, 0x0031, CURVE(0, 3) << 8 | CURVE(0, 2));
-	write_reg(par, 0x0032, CURVE(0, 5) << 8 | CURVE(0, 3));
-	write_reg(par, 0x0033, CURVE(0, 7) << 8 | CURVE(0, 6));
-	write_reg(par, 0x0034, CURVE(0, 9) << 8 | CURVE(0, 8));
-	write_reg(par, 0x0035, CURVE(0, 11) << 8 | CURVE(0, 10));
-
-	write_reg(par, 0x0036, CURVE(1, 1) << 8 | CURVE(1, 0));
-	write_reg(par, 0x0037, CURVE(1, 3) << 8 | CURVE(1, 2));
-	write_reg(par, 0x0038, CURVE(1, 5) << 8 | CURVE(1, 4));
-	write_reg(par, 0x0039, CURVE(1, 7) << 8 | CURVE(1, 6));
-	write_reg(par, 0x003A, CURVE(1, 9) << 8 | CURVE(1, 8));
-	write_reg(par, 0x003B, CURVE(1, 11) << 8 | CURVE(1, 10));
-
-	write_reg(par, 0x003C, CURVE(0, 13) << 8 | CURVE(0, 12));
-	write_reg(par, 0x003D, CURVE(1, 13) << 8 | CURVE(1, 12));
-
-	return 0;
-}
-#undef CURVE
 
 #define GPIOSET(no, ishigh)           \
 do {                                  \
@@ -616,44 +548,21 @@ int write(struct fbtft_par *par, void *buf, size_t len)
 	return 0;
 }
 
-void reset(struct fbtft_par *par)
-{
-	if (par->gpio.reset == -1)
-		return;
-
-	fbtft_dev_dbg(DEBUG_RESET, par, par->info->device, "%s()\n", __func__);
-
-	gpio_set_value(par->gpio.reset, 0);
-	udelay(10);
-	gpio_set_value(par->gpio.reset, 1);
-	udelay(10);
-}
-
-
 static struct fbtft_display display = {
 	.regwidth = 16,
 	.width = WIDTH,
 	.height = HEIGHT,
 	.bpp = BPP,
 	.fps = FPS,
-//	.gamma_num = 2,
-//	.gamma_len = 14,
-//	.gamma = DEFAULT_GAMMA,
 	.fbtftops = {
 		.init_display = init_display,
 		.set_addr_win = set_addr_win,
-		// .write_register = write_register,
 		.write = write,
-//		.reset = reset,
-//		.set_var = set_var,
-		// .set_gamma = set_gamma,
 	},
 };
 FBTFT_REGISTER_DRIVER(DRVNAME, "raydium,rm68120", &display);
 
-// MODULE_ALIAS("spi:" DRVNAME);
 MODULE_ALIAS("platform:" DRVNAME);
-// MODULE_ALIAS("spi:rm68120");
 MODULE_ALIAS("platform:rm68120");
 
 MODULE_DESCRIPTION("FB driver for the rm68120 LCD Controller");

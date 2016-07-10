@@ -1086,7 +1086,8 @@ static struct fbtft_device_display displays[] = {
 					.width = 800,
 					.height = 480,
 				},
-				.bgr = false,
+				.bgr = 0,
+				.txbuflen = -1,
 				.gpios = (const struct fbtft_gpio []) {
 					/* Wiring for LCD adapter kit */
 					{ "reset", 16 },
