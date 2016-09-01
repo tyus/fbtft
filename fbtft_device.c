@@ -1138,7 +1138,40 @@ static struct fbtft_device_display displays[] = {
 			},
 			}
 		}
-	}
+	}, {
+		.name = "XYT26L",
+		.pdev = &(struct platform_device) {
+			.name = "fb_r61525",
+			.id = 0,
+			.dev = {
+			.release = fbtft_device_pdev_release,
+			.platform_data = &(struct fbtft_platform_data) {
+				.display = {
+					.buswidth = 8,
+					.backlight = 1,
+				},
+				.bgr = false,
+				.gpios = (const struct fbtft_gpio []) {
+					/* Wiring for LCD adapter kit */
+					{ "reset", 12 },
+					{ "dc", 17 },
+					{ "wr", 27 },
+					{ "cs", 4 },
+					{ "rd", 22 },
+					{ "db00", 16 },
+					{ "db01", 20 },
+					{ "db02", 21 }, /* rev 2: 27 */
+					{ "db03", 5 },
+					{ "db04", 6 },
+					{ "db05", 13 },
+					{ "db06", 19 },
+					{ "db07", 26 },
+					{}
+				},
+			},
+			}
+		}
+	},
 };
 
 static int write_gpio16_wr_slow(struct fbtft_par *par, void *buf, size_t len)

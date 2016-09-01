@@ -36,6 +36,7 @@ fbtft-y                          += fbtft-core.o fbtft-sysfs.o fbtft-bus.o fbtft
 #obj-$(CONFIG_FB_TFT_WATTEROTT)   += fb_watterott.o
 obj-$(CONFIG_FB_FLEX)            += flexfb.o
 obj-$(CONFIG_FB_TFT_RM68120)         += fb_rm68120.o
+obj-$(CONFIG_FB_TFT_R61525)         += fb_r61525.o
 
 # Device modules
 obj-$(CONFIG_FB_TFT_FBTFT_DEVICE) += fbtft_device.o

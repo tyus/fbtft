@@ -171,3 +171,7 @@ config FB_TFT_FBTFT_DEVICE
 config FB_TFT_RM68120
 	tristate "Module to for RM68120 FBTFT devices"
 	depends on FB_TFT
+
+config FB_TFT_R61525
+	tristate "Module to for R61525 FBTFT devices"
+	depends on FB_TFT
